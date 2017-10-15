@@ -5,7 +5,10 @@
         <textarea class="msg" v-model="msg"></textarea>
       </div>
       <div class="row">
-        <button class="btn btn-success pull-right" type="button">发送</button>
+        <button @click="send" class="btn btn-success pull-right" type="button">
+          <span class="glyphicon glyphicon-send"></span>
+          发送
+        </button>
         <div class="clearfix"></div>
       </div>
     </div>
@@ -18,7 +21,13 @@ export default {
   name: 'ChatSender',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: '消息'
+    }
+  },
+  methods: {
+    send: function () {
+      console.log(this.msg)
+      this.msg = ''
     }
   }
 }
@@ -39,6 +48,13 @@ export default {
     outline: none;
     background-color: inherit;
     font-size: 18px;
+  }
+  .btn {
+    width: 80px;
+    .glyphicon {
+      margin-right: 2px;
+      font-size: 12px;
+    }
   }
 }
 </style>

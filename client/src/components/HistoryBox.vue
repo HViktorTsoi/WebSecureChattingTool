@@ -84,7 +84,7 @@ export default {
     }
   }
   hr {
-    margin: 0;
+    margin: 0 5px;
     border: 0.5px solid #ccc;
   }
   .chat-content {

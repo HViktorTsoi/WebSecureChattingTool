@@ -1,16 +1,19 @@
 <template>
   <div class="row contract-list">
     <ul class="list-group">
-      <li v-for="(item,index) in contractList" class="list-group-item" :key="index">
+      <li @click="switchChattingTarget(item,index)" v-for="(item,index) in contractList" :class="['list-group-item',activeIndex==index?'active':'']" :key="index">
         <div class="row">
-          <span class="col-xs-2 avatar">
-            <img :src="item.avatar" class="img-circle">
+          <!-- <span class="col-xs-2 avatar">
+                    <img :src="item.avatar" class="img-circle">
+                  </span> -->
+          <span class="col-xs-6 ipaddr">
+            {{item.nickName}}
           </span>
-          <span class="col-xs-7 ipaddr">
-            {{item.ipaddr+'00'+index}}
+          <span class="col-xs-4 latest">
+            {{$parseTime(item.lastMsgTime)}}
           </span>
-          <span class="col-xs-3 latest">
-            {{item.lastMsgTime}}
+          <span v-if="item.msgCount>0" class="col-xs-1 label label-danger">
+            {{item.msgCount}}
           </span>
         </div>
       </li>
@@ -23,33 +26,18 @@ export default {
   name: 'ContractList',
   data () {
     return {
-      contractList: [
-        {
-          avatar: '/static/logo.png',
-          ipaddr: '192.168.1.',
-          lastMsgTime: '12:40'
-        },
-        {
-          avatar: '/static/logo.png',
-          ipaddr: '192.168.1.',
-          lastMsgTime: '12:40'
-        },
-        {
-          avatar: '/static/logo.png',
-          ipaddr: '192.168.1.',
-          lastMsgTime: '12:40'
-        },
-        {
-          avatar: '/static/logo.png',
-          ipaddr: '192.168.1.',
-          lastMsgTime: '12:40'
-        },
-        {
-          avatar: '/static/logo.png',
-          ipaddr: '192.168.1.',
-          lastMsgTime: '12:40'
-        }
-      ]
+      activeIndex: -1
+    }
+  },
+  computed: {
+    contractList () {
+      return this.$store.state.userList
+    }
+  },
+  methods: {
+    switchChattingTarget: function (user, index) {
+      this.activeIndex = index
+      this.$store.dispatch('switchChattingTarget', user)
     }
   }
 }
@@ -66,16 +54,36 @@ export default {
   background-color: #2e3238;
   .list-group-item {
     margin-top: 2px;
-    .avatar {
-      img {
-        width: 30px;
+    cursor: pointer;
+    &:hover {
+      $clr: #337ab7;
+      background-color: $clr;
+      border: 1px solid $clr;
+      color: #ffffff;
+    }
+    .row {
+      $row_height: 30px;
+      height: $row_height;
+      line-height: $row_height;
+      .avatar {
+        img {
+          width: 30px;
+        }
       }
-    }
-    .ipaddr {
-      font-size: 18px;
-    }
-    .latest{
-      font-size: 13px;
+      .ipaddr {
+        font-size: 18px;
+      }
+      .latest {
+        font-size: 13px;
+      }
+      .label {
+        $lbl_height: 20px;
+        $lbl_mgn: ($row_height - $lbl_height)/2;
+        margin: $lbl_mgn 0;
+        height: $lbl_height;
+        line-height: $lbl_height;
+        padding: 0;
+      }
     }
   }
 }

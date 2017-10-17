@@ -3,18 +3,18 @@
     <section class="row chat-title">
       <span>
         <h4>
-          聊天对象：{{title}}
+          聊天对象：{{curChattingTarget.nickName?curChattingTarget.nickName:'请选取'}}{{'@'+curChattingTarget.uid}}
         </h4>
       </span>
     </section>
     <hr/>
-    <section class="row chat-content">
+    <section ref="dom" class="row chat-content">
       <div class="content-list">
         <div v-for="(item,index) in historyList" :key="index" class="">
           <div :class="['content-box',item.isSelf?'pull-right':'pull-left']">
             <div :class="[item.isSelf?'pull-right':'pull-left']">
-              <span class="label label-default ipaddr">{{item.time}}</span>
-              <span class="time">【{{item.ipaddr}}】</span>
+              <span class="label label-default ipaddr">{{$parseTime(item.clientTime)}}</span>
+              <span class="time">【{{item.nickName}}】</span>
             </div>
             <div class="clearfix"></div>
             <div :class="['content',item.isSelf?'content-right':'content-left']">
@@ -34,39 +34,28 @@ export default {
   name: 'HistoryBox',
   data () {
     return {
-      title: '192.168.1.1',
-      historyList: [
-        {
-          time: 0,
-          isSelf: true,
-          content: '测试消息',
-          ipaddr: '192.168.0.1'
-        },
-        {
-          time: 1,
-          isSelf: false,
-          content: '来自对方的测试消息',
-          ipaddr: '192.168.0.100'
-        },
-        {
-          time: 2,
-          isSelf: true,
-          content: '测试消息',
-          ipaddr: '192.168.0.1'
-        },
-        {
-          time: 3,
-          isSelf: true,
-          content: '测试消息',
-          ipaddr: '192.168.0.1'
-        },
-        {
-          time: 3,
-          isSelf: true,
-          content: '测试消息',
-          ipaddr: '192.168.0.1'
-        }
-      ]
+      title: '192.168.1.1'
+    }
+  },
+  computed: {
+    historyList () {
+      // return this.$store.state.chatHistoryList[this.$store.state.curChattingTarget.uid]
+      return this.$store.getters.getCurChattingTargetHisToryList
+    },
+    curChattingTarget () {
+      return this.$store.state.curChattingTarget
+    }
+  },
+  mounted: function () {
+    var container = this.$refs.dom
+    container.scrollTop = container.scrollHeight
+  },
+  watch: {
+    historyList () {
+      this.$nextTick(() => {
+        var container = this.$refs.dom
+        container.scrollTop = container.scrollHeight
+      })
     }
   }
 }
@@ -79,6 +68,7 @@ export default {
   background-color: #eee;
   .chat-title {
     text-align: center;
+    overflow: hidden;
     span {
       vertical-align: middle;
     }
@@ -101,11 +91,15 @@ export default {
           padding: 10px 10px;
           margin: 5px 0;
           max-width: 200px;
+          word-wrap: break-word;
         }
         .content-left {
           background-color: #fff;
+          display: inline-block;
         }
         .content-right {
+          float: right;
+          display: inline-block;
           background-color: #b2e281;
         }
       }

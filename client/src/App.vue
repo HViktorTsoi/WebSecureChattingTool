@@ -27,6 +27,12 @@ export default {
     ContractList,
     HistoryBox,
     UserInfo
+  },
+  mounted: function () {
+    this.$store.dispatch('initWebSocket', {
+      host: '192.168.0.202',
+      port: 9989
+    })
   }
 }
 </script>
@@ -34,15 +40,20 @@ export default {
 <style lang="scss">
 * {
   // background-color: rgba(0, 0, 0, 0.1);
+  // transition: color 0.3s;
 }
 
 ul,
 li,
-div,
-span {
+div{
   border-radius: 0px!important;
 }
 
+@media screen and (max-width: 763px) {
+  .container{
+    padding: 0;
+  }
+}
 .chatbox {
   min-height: chatbox_height;
   .chatbox-left {

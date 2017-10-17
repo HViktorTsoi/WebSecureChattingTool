@@ -2,10 +2,10 @@
   <div class="row chat-sender">
     <div class="col-xs-12">
       <div class="row">
-        <textarea class="msg" v-model="msg"></textarea>
+        <textarea v-if="curChattingTarget.uid" class="msg" v-model="msg"></textarea>
       </div>
       <div class="row">
-        <button @click="send" class="btn btn-success pull-right" type="button">
+        <button v-if="curChattingTarget.uid" @click="send" class="btn btn-success pull-right" type="button">
           <span class="glyphicon glyphicon-send"></span>
           发送
         </button>
@@ -24,10 +24,18 @@ export default {
       msg: '消息'
     }
   },
+  computed: {
+    curChattingTarget () {
+      return this.$store.state.curChattingTarget
+    }
+  },
   methods: {
     send: function () {
-      console.log(this.msg)
-      this.msg = ''
+      if (this.msg !== '') {
+        console.log(this.msg)
+        this.$store.dispatch('sendMsg', this.msg)
+        this.msg = ''
+      }
     }
   }
 }

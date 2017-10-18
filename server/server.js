@@ -4,7 +4,8 @@ var wss = new WebSocketServer({
 })
 
 var userList = new Array()
-
+var deadQueue = new Array()
+var pulseTime = 5000
 //广播  
 wss.broadcast = function broadcast (data) {
     wss.clients.forEach(function each (client) {
@@ -30,11 +31,18 @@ wss.on('connection', function (ws, request) {
         msg = JSON.parse(msg)
         // 加入聊天请求
         if (msg.type === 'join') {
-            userList[msg.user.uid] = {
-                websocket: this,
-                user: msg.user
+            // 如果有死亡信号则消除死亡信号 否则说明是正常的连接请求
+            if (deadQueue[this.uid]) {
+                deadQueue[this.uid] = false
             }
-            wss.sendUserList()
+            else {
+                userList[msg.user.uid] = {
+                    websocket: this,
+                    user: msg.user
+                }
+                this.uid = msg.user.uid
+                wss.sendUserList()
+            }
         }
         // 退出聊天请求
         else if (msg.type === 'quit') {
@@ -44,19 +52,37 @@ wss.on('connection', function (ws, request) {
         }
         // 消息
         else if (msg.type === 'msg') {
-            var websocket = userList[msg.to].websocket
-            websocket.send(JSON.stringify(msg))
-            console.log(msg)
+            try {
+                var websocket = userList[msg.to].websocket
+                websocket.send(JSON.stringify(msg))
+                console.log('发送消息', msg)
+            }
+            catch (e) {
+                // 如果有问题就返回给发送方 该用户已经离线
+                var t = msg.uid
+                msg.uid = msg.to
+                msg.to = t
+                msg.msg = '【系统消息】用户已经离线'
+                this.send(JSON.stringify(msg))
+            }
         }
     })
     ws.on('close', function (close) {
-        for (var uid in userList) {
-            if (userList[uid].websocket == this) {
-                delete userList[uid]
-                break
+        console.log('请求断开连接', close)
+        // 在死亡信号队列中加入正在断开连接的socket 等待一段时间后看是否进行了重新连接
+        deadQueue[this.uid] = true
+        var that = this
+        setTimeout(function () {
+            if (deadQueue[that.uid]) {
+                for (var uid in userList) {
+                    if (userList[uid].websocket == that) {
+                        delete userList[uid]
+                        break
+                    }
+                }
+                wss.sendUserList()
             }
-        }
-        wss.sendUserList()
+        }, pulseTime)
     })
 })
 wss.on('error', function (ws) {

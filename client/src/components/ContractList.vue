@@ -1,18 +1,19 @@
 <template>
   <div class="row contract-list">
     <ul class="list-group">
-      <li @click="switchChattingTarget(item,index)" v-for="(item,index) in contractList" :class="['list-group-item',activeIndex==index?'active':'']" :key="index">
+      <li @click="switchChattingTarget(item,index)"
+          v-for="(item,index) in contractList"
+          :class="['list-group-item',activeIndex==index||$store.state.curChattingTarget.uid==item.uid?'active':'']"
+          :key="index">
         <div class="row">
-          <!-- <span class="col-xs-2 avatar">
-                    <img :src="item.avatar" class="img-circle">
-                  </span> -->
           <span class="col-xs-6 ipaddr">
             {{item.nickName}}
           </span>
           <span class="col-xs-4 latest">
             {{$parseTime(item.lastMsgTime)}}
           </span>
-          <span v-if="item.msgCount>0" class="col-xs-1 label label-danger">
+          <span v-if="item.msgCount>0"
+                class="col-xs-1 label label-danger">
             {{item.msgCount}}
           </span>
         </div>

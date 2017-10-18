@@ -2,10 +2,16 @@
   <div class="row chat-sender">
     <div class="col-xs-12">
       <div class="row">
-        <textarea v-if="curChattingTarget.uid" class="msg" v-model="msg"></textarea>
+        <textarea placeholder="请在此处输入你要发送的消息......"
+                  v-if="curChattingTarget.uid"
+                  class="msg"
+                  v-model="msg"></textarea>
       </div>
       <div class="row">
-        <button v-if="curChattingTarget.uid" @click="send" class="btn btn-success pull-right" type="button">
+        <button v-if="curChattingTarget.uid"
+                @click="send"
+                class="btn btn-success pull-right"
+                type="button">
           <span class="glyphicon glyphicon-send"></span>
           发送
         </button>
@@ -21,7 +27,7 @@ export default {
   name: 'ChatSender',
   data () {
     return {
-      msg: '消息'
+      msg: ''
     }
   },
   computed: {

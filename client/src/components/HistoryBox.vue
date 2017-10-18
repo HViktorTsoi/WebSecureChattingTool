@@ -1,16 +1,17 @@
 <template>
   <div class="row history-box">
-    <section class="row chat-title">
-      <span>
-        <h4>
-          聊天对象：{{curChattingTarget.nickName?curChattingTarget.nickName:'请选取'}}{{'@'+curChattingTarget.uid}}
-        </h4>
-      </span>
+    <section class="row">
+      <div class="row chat-title">
+        聊天对象：{{curChattingTarget.nickName?curChattingTarget.nickName:'请选取'}}
+      </div>
     </section>
     <hr/>
-    <section ref="dom" class="row chat-content">
+    <section ref="dom"
+             class="row chat-content">
       <div class="content-list">
-        <div v-for="(item,index) in historyList" :key="index" class="">
+        <div v-for="(item,index) in historyList"
+             :key="index"
+             class="">
           <div :class="['content-box',item.isSelf?'pull-right':'pull-left']">
             <div :class="[item.isSelf?'pull-right':'pull-left']">
               <span class="label label-default ipaddr">{{$parseTime(item.clientTime)}}</span>
@@ -39,7 +40,6 @@ export default {
   },
   computed: {
     historyList () {
-      // return this.$store.state.chatHistoryList[this.$store.state.curChattingTarget.uid]
       return this.$store.getters.getCurChattingTargetHisToryList
     },
     curChattingTarget () {
@@ -68,7 +68,10 @@ export default {
   background-color: #eee;
   .chat-title {
     text-align: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    font-size: 20px;
+    height: $chatbox_chattitle_height;
+    line-height: $chatbox_chattitle_height;
     span {
       vertical-align: middle;
     }

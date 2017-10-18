@@ -10,7 +10,9 @@ export default new Vuex.Store({
     userList: [],
     uid: 0,
     curChattingTarget: {},
-    nickName: navigator.appName
+    nickName: null,
+    serverInfo: {},
+    encryptKey: null
   },
 
   getters: {
@@ -25,6 +27,10 @@ export default new Vuex.Store({
     },
     setUID: (state, uid) => {
       state.uid = uid
+    },
+    setLoginInfo: (state, loginInfo) => {
+      state.nickName = loginInfo.nickName
+      state.serverInfo = loginInfo.serverInfo
     },
     setUserList: (state, userListFromServer) => {
       var oldUserList = state.userList
@@ -80,13 +86,16 @@ export default new Vuex.Store({
         }
         state.chatHistoryList[chat.from].push(chat)
       }
+    },
+    recoverState: (state, stateBak) => {
+      state = stateBak
     }
   },
 
   actions: {
     // 初始化websocket
-    initWebSocket: ({ dispatch, commit, state }, serverInfo) => {
-      var ws = new WebSocket('ws://' + serverInfo.host + ':' + serverInfo.port)
+    initWebSocket: ({ dispatch, commit, state }) => {
+      var ws = new WebSocket('ws://' + state.serverInfo.host + ':' + state.serverInfo.port)
       // 生成的唯一id
       dispatch('initUID')
       ws.onopen = function () {
@@ -103,9 +112,10 @@ export default new Vuex.Store({
       ws.onmessage = function (evt) {
         var msg = evt.data
         msg = JSON.parse(msg)
+        // 如果收到的是用户列表
         if (msg.type === 'userList') {
           commit('setUserList', msg.userList)
-        } else if (msg.type === 'msg') {
+        } else if (msg.type === 'msg') { // 如果收到的是消息
           // alert(msg.msg)
           commit('addToChatHistoryList', {
             clientTime: msg.time,
@@ -126,10 +136,6 @@ export default new Vuex.Store({
       }
       ws.onclose = function (evt) {
         alert(evt)
-        // ws.send(JSON.stringify({
-        //   type: 'quit',
-        //   uid: getters.uid
-        // }))
       }
       commit('injectWebSocket', ws)
     },

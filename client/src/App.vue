@@ -1,15 +1,7 @@
 <template>
-  <div id="app" class="container">
-    <div class="chatbox">
-      <div class="col-sm-8 col-md-9 chatbox-left">
-        <history-box></history-box>
-        <chat-sender></chat-sender>
-      </div>
-      <div class="col-sm-4 col-md-3 chatbox-right">
-        <user-info></user-info>
-        <contract-list></contract-list>
-      </div>
-    </div>
+  <div id="app"
+       class="container">
+    <router-view></router-view>
   </div>
 </template>
 
@@ -19,6 +11,7 @@ import ChatSender from './components/ChatSender'
 import ContractList from './components/ContractList'
 import HistoryBox from './components/HistoryBox'
 import UserInfo from './components/UserInfo'
+import Chat from './components/Chat'
 
 export default {
   name: 'app',
@@ -26,13 +19,13 @@ export default {
     ChatSender,
     ContractList,
     HistoryBox,
-    UserInfo
+    UserInfo,
+    Chat
   },
   mounted: function () {
-    this.$store.dispatch('initWebSocket', {
-      host: '192.168.0.202',
-      port: 9989
-    })
+  },
+  beforeDestroy: function () {
+    // localStorage.vm = this
   }
 }
 </script>
@@ -45,15 +38,18 @@ export default {
 
 ul,
 li,
-div{
+div {
   border-radius: 0px!important;
 }
 
-@media screen and (max-width: 763px) {
-  .container{
+@media screen and (max-width: 993px) {
+  .container {
     padding: 0;
+    margin: 0;
+    width: 100%;
   }
 }
+
 .chatbox {
   min-height: chatbox_height;
   .chatbox-left {

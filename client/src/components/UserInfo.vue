@@ -3,7 +3,7 @@
     <span class="avatar">
       <img :src="avatar" class="img-circle ">
     </span>
-    <span class="ipaddr"> {{ipaddr}} </span>
+    <span class="ipaddr"> {{$store.state.nickName}} </span>
   </div>
 </template>
 
@@ -12,7 +12,6 @@ export default {
   name: 'UserInfo',
   data () {
     return {
-      ipaddr: '192.168.0.1',
       avatar: '/static/logo.png'
     }
   }

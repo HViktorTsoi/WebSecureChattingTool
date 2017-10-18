@@ -1,28 +1,32 @@
 <template>
-  <div id="app"
-       class="container">
-    <router-view></router-view>
+  <div id="app">
+    <nav-top></nav-top>
+    <div class="container">
+      <transition name="slide-fade">
+        <router-view></router-view>
+      </transition>
+    </div>
+    <transition name="slide-fade">
+      <nav-footer v-if="$route.name=='Login'"></nav-footer>
+    </transition>
   </div>
 </template>
 
 <script>
 
-import ChatSender from './components/ChatSender'
-import ContractList from './components/ContractList'
-import HistoryBox from './components/HistoryBox'
-import UserInfo from './components/UserInfo'
 import Chat from './components/Chat'
+import NavTop from './components/NavTop'
+import NavFooter from './components/NavFooter'
 
 export default {
   name: 'app',
   components: {
-    ChatSender,
-    ContractList,
-    HistoryBox,
-    UserInfo,
-    Chat
+    Chat,
+    NavTop,
+    NavFooter
   },
   mounted: function () {
+    console.log(this.$route)
   },
   beforeDestroy: function () {
     // localStorage.vm = this
@@ -39,24 +43,19 @@ export default {
 ul,
 li,
 div {
-  border-radius: 0px!important;
+  // border-radius: 0px!important;
 }
 
+body {
+  background-color: #f0f0f0;
+} //   margin: 0;
+//   padding: 0;
+//   width: 100%;
 @media screen and (max-width: 993px) {
   .container {
-    padding: 0;
+    padding: 0 1px;
     margin: 0;
     width: 100%;
-  }
-}
-
-.chatbox {
-  min-height: chatbox_height;
-  .chatbox-left {
-    padding: 0;
-    .row {
-      margin: 0;
-    }
   }
 }
 
@@ -74,4 +73,29 @@ div {
   border-radius: 10px; // -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
   background-color: #555;
 }
+
+.slide-fade-enter-active {
+  position: absolute;
+  transition: all .5s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+  transform: translateX(-400px);
+  opacity: 0;
+}
+
+// .fade-enter-active,
+// .fade-leave-active {
+//   // position: absolute;
+//   transition: opacity .5s;
+// }
+// .fade-enter,
+// .fade-leave-to {
+//   opacity: 0
+// }
 </style>

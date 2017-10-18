@@ -8,6 +8,7 @@
       <user-info></user-info>
       <contract-list></contract-list>
     </div>
+    <div class="clearfix"></div>
   </div>
 </template>
 
@@ -29,6 +30,16 @@ export default {
 }
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+.chatbox {
+  box-shadow: 0 0 9px 2px #666;
+  border-radius: 3px!important;
+  margin-top: 5px;
+  min-height: chatbox_height;
+  .chatbox-left {
+    .row {
+      margin: 0;
+    }
+  }
+}
 </style>

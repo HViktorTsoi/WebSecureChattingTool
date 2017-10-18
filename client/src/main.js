@@ -82,6 +82,12 @@ router.beforeEach((to, from, next) => {
       router.push('Login')
     }
   } else {
+    if (store.state.ws) {
+      store.state.ws.send(JSON.stringify({
+        type: 'quit',
+        uid: store.state.uid
+      }))
+    }
     delete localStorage.lastTimeState
     next()
   }

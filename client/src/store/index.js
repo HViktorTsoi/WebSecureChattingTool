@@ -1,7 +1,26 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+var aesjs = require('aes-js')
+var Base64 = require('js-base64').Base64
 Vue.use(Vuex)
+
+// 加密函数
+function WS_encrypt (plain, key) {
+  plain = Base64.encode(plain)
+  var textBytes = aesjs.utils.utf8.toBytes(plain)
+  var aesCtr = new aesjs.ModeOfOperation.ctr(JSON.parse(Base64.decode(key)), new aesjs.Counter(5))
+  var enCryptedPlain = aesjs.utils.hex.fromBytes(aesCtr.encrypt(textBytes))
+  return enCryptedPlain
+}
+// 解密函数
+function WS_decrypt (msg, key) {
+  var encryptedBytes = aesjs.utils.hex.toBytes(msg)
+  var aesCtr2 = new aesjs.ModeOfOperation.ctr(JSON.parse(Base64.decode(key)), new aesjs.Counter(5))
+  var decryptedMsg = aesjs.utils.utf8.fromBytes(aesCtr2.decrypt(encryptedBytes))
+  msg = Base64.decode(decryptedMsg)
+  return msg
+}
 
 export default new Vuex.Store({
   state: {
@@ -27,6 +46,9 @@ export default new Vuex.Store({
     },
     setUID: (state, uid) => {
       state.uid = uid
+    },
+    setEncryptKey: (state, key) => {
+      state.encryptKey = key
     },
     setLoginInfo: (state, loginInfo) => {
       state.nickName = loginInfo.nickName
@@ -115,8 +137,10 @@ export default new Vuex.Store({
         // 如果收到的是用户列表
         if (msg.type === 'userList') {
           commit('setUserList', msg.userList)
-        } else if (msg.type === 'msg') { // 如果收到的是消息
-          // alert(msg.msg)
+        } else if (msg.type === 'msg') {
+          // 如果收到的是消息
+          // 先进行消息解密
+          msg.msg = WS_decrypt(msg.msg, state.encryptKey)
           commit('addToChatHistoryList', {
             clientTime: msg.time,
             content: msg.msg,
@@ -132,16 +156,18 @@ export default new Vuex.Store({
           } else {
             commit('updateUserList', msg)
           }
+        } else if (msg.type === 'key') {
+          // 如果收到的是密钥
+          commit('setEncryptKey', msg.key)
         }
       }
       ws.onclose = function (evt) {
-        alert(evt)
+        alert('服务器已经关闭，请退出后重新登录！')
       }
       commit('injectWebSocket', ws)
     },
     // 初始化用户唯一id
     initUID: ({ commit }) => {
-      // localStorage.clear()
       if (localStorage.uid) {
         commit('setUID', localStorage.uid)
       } else {
@@ -159,13 +185,17 @@ export default new Vuex.Store({
     sendMsg: ({ commit, state }, msg) => {
       // 时间处理
       var clientTime = Math.round(new Date().getTime() / 1000)
+      // AES加密
+      var encryptedMsg = WS_encrypt(msg, state.encryptKey)
+      console.log('加密后：', encryptedMsg, ' 密钥：', state.encryptKey)
+
       // 发送消息
       state.ws.send(JSON.stringify({
         type: 'msg',
         time: clientTime,
         uid: state.uid,
         to: state.curChattingTarget.uid,
-        msg: msg
+        msg: encryptedMsg
       }))
       // 更新本地的对话历史列表
       commit('addToChatHistoryList', {

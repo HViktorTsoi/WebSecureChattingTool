@@ -95,6 +95,8 @@ export default {
           margin: 5px 0;
           max-width: 200px;
           word-wrap: break-word;
+          box-shadow: 1px 1px 1px 1px #cdcdcd;
+          border-radius: 3px;
         }
         .content-left {
           background-color: #fff;

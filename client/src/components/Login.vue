@@ -1,6 +1,7 @@
 <template>
   <div class="chatbox">
-    <form>
+    <h1>WEB加密通信工具</h1>
+    <form class="login-face">
       <div :class="['form-group',errors.has('serverIP')?'has-error':'']">
         <label class="control-label"
                for="">
@@ -83,7 +84,7 @@ export default {
   name: 'Login',
   data () {
     return {
-      serverIP: '192.168.0.202',
+      serverIP: '192.168.0.',
       serverPort: '9989',
       nickName: ''
     }
@@ -115,5 +116,29 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
 
+.login-face {
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 30px 30px 10px 30px;
+  border-radius: 3px;
+  .has-error .control-label {
+    color: #e94442!important;
+  }
+  .form-group {
+    .glyphicon {
+      font-size: 12px;
+      margin-right: 2px;
+    }
+    label {
+      color: #fff;
+    }
+    button {
+      margin-top: 25px;
+    }
+  }
+}
 </style>
